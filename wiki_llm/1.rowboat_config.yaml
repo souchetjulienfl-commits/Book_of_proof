@@ -1,0 +1,31 @@
+version: "1.0"
+harness:
+  name: "karpathy-layer2-verifier"
+  description: "Harnais de vérification à deux LLM avec boucle de rétroaction (Méthode Karpathy Couche 2)"
+  max_retries: 3
+  stop_on_pass: true
+
+models:
+  generator:
+    id: "llm_a_generator"
+    provider: "ollama" # ou vllm, litellm, local
+    model: "qwen3.5:9b"
+    parameters:
+      temperature: 0.7
+
+  verifier:
+    id: "llm_b_verifier"
+    provider: "ollama"
+    model: "Ling-3.0-tiny-GGUF:latest" # Modèle orienté logique pour la critique
+    parameters:
+      temperature: 0.1 # Température basse pour une évaluation déterministe
+      response_format:
+        type: "json_object"
+
+criteria_grid:
+  format_and_structure:
+    - "L'output respecte-t-il exactement la structure demandée (format JSON, balises, sections requises) ?"
+  accuracy_and_grounding:
+    - "L'information est-elle basée sur les faits fournis sans extrapolation ni hallucination ?"
+  internal_logic:
+    - "Le raisonnement est-il fluide, logique et exempt de contradictions internes ?"
